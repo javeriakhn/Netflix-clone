@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-analyze-scan:
-    name: Build and Analyze with SonarQube
+    name: Build, Analyze, and Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -34,4 +34,13 @@ jobs:
       - name: Scan files with Trivy
         run: trivy fs .
 
-          
+      - name: Docker build and push
+        run: |
+          # Run commands to build and push Docker images
+          docker build --build-arg TMDB_V3_API_KEY=0a07815b8f4a97f748f577066f5a884c -t netflix .
+          docker tag netflix javeriakashan/netflix:latest
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker push javeriakashan/netflix:latest  
+        env:
+          DOCKER_CLI_ACI: 1
+
